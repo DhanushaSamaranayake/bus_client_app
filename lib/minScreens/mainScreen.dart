@@ -6,7 +6,9 @@ import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/infoHandler/appInfo.dart';
 import 'package:bus_client_app/minScreens/search_places_screen.dart';
 import 'package:bus_client_app/widgets/my_drawer.dart';
+import 'package:bus_client_app/widgets/progress.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +36,9 @@ class _MainScreenState extends State<MainScreen> {
 
   Position? userCurrentPosition;
   var geolocator = Geolocator();
+
+  List<LatLng> pLineCoordinates = [];
+  Set<Polyline> polylineSet = {};
 
   //LocationPermission? _locationPermission;
 
@@ -330,6 +335,7 @@ class _MainScreenState extends State<MainScreen> {
             zoomGesturesEnabled: true,
             zoomControlsEnabled: true,
             initialCameraPosition: _kGooglePlex,
+            polylines: polylineSet,
             onMapCreated: (GoogleMapController controller) {
               _controllerGoogleMap.complete(controller);
               newGoogleMapController = controller;
@@ -447,15 +453,16 @@ class _MainScreenState extends State<MainScreen> {
 
                       // To location
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           //go to search place screen
-                          var responseFromSearchScreen = Navigator.push(
+                          var responseFromSearchScreen = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (c) => SearchPlacesScreen()));
 
                           if (responseFromSearchScreen == "obtainedDropoff") {
                             //draw routes / draw polyline
+                            await drawPolyLineFromOriginToDestination();
                           }
                         },
                         child: Row(children: [
@@ -526,5 +533,60 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> drawPolyLineFromOriginToDestination() async {
+    var originPosition =
+        Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
+    var destinationPosition =
+        Provider.of<AppInfo>(context, listen: false).userDropOfLocation;
+
+    var originLatLng = LatLng(
+        originPosition!.locationLatitude!, originPosition!.locationLongitude!);
+    var destinationLatLng = LatLng(destinationPosition!.locationLatitude!,
+        destinationPosition!.locationLongitude!);
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => ProgressDialog(
+              message: "Please wait ...",
+            ));
+
+    var directionDetailsInfo =
+        await AssistantMethods.obtainOriginToDestinationDirectionDetails(
+            originLatLng, destinationLatLng);
+
+    Navigator.pop(context);
+    print("These are Points = ");
+    print(directionDetailsInfo!.encoded_points!);
+
+    PolylinePoints pPoints = PolylinePoints();
+    List<PointLatLng> decodedPolyLinePointsResultList =
+        pPoints.decodePolyline(directionDetailsInfo!.encoded_points!);
+
+    pLineCoordinates.clear();
+
+    if (decodedPolyLinePointsResultList.isNotEmpty) {
+      decodedPolyLinePointsResultList.forEach((PointLatLng pointLatLng) {
+        pLineCoordinates
+            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+      });
+    }
+
+    polylineSet.clear();
+
+    setState(() {
+      Polyline polyline = Polyline(
+          polylineId: const PolylineId("PolylineID"),
+          color: Colors.black,
+          jointType: JointType.round,
+          points: pLineCoordinates,
+          width: 5,
+          startCap: Cap.roundCap,
+          endCap: Cap.roundCap,
+          geodesic: true);
+
+      polylineSet.add(polyline);
+    });
   }
 }

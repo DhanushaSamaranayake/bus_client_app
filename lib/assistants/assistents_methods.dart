@@ -2,10 +2,12 @@ import 'package:bus_client_app/assistants/req_assistens.dart';
 import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/global/map_key.dart';
 import 'package:bus_client_app/infoHandler/appInfo.dart';
+import 'package:bus_client_app/models/direction_detailsinfo.dart';
 import 'package:bus_client_app/models/directions.dart';
 import 'package:bus_client_app/models/user_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
@@ -45,5 +47,33 @@ class AssistantMethods {
         userModelCurrentInfo = UserModel.fromSnapShot(snap.snapshot);
       }
     });
+  }
+
+  static Future<DirectionDetailsInfo?>
+      obtainOriginToDestinationDirectionDetails(
+          LatLng originPosition, LatLng destinationPosition) async {
+    String urlobtainOriginToDestinationDirectionDetails =
+        "https://maps.googleapis.com/maps/api/directions/json?origin=${originPosition.latitude},${originPosition.longitude}&destination=${destinationPosition.latitude},${destinationPosition.longitude}&key=$mapKey";
+
+    var responseDirectionApi = await RequestAssistant.receiveRequest(
+        urlobtainOriginToDestinationDirectionDetails);
+
+    if (responseDirectionApi == "Error Occurred, Failed. No Response..") {
+      return null;
+    }
+
+    DirectionDetailsInfo directiondetailsInfo = DirectionDetailsInfo();
+    directiondetailsInfo.encoded_points =
+        responseDirectionApi["routes"][0]["overview_polyline"]["points"];
+    directiondetailsInfo.distance_text =
+        responseDirectionApi["routes"][0]["legs"][0]["distance"]["text"];
+    directiondetailsInfo.distance_value =
+        responseDirectionApi["routes"][0]["legs"][0]["distance"]["value"];
+    directiondetailsInfo.duration_text =
+        responseDirectionApi["routes"][0]["legs"][0]["duration"]["text"];
+    directiondetailsInfo.duration_value =
+        responseDirectionApi["routes"][0]["legs"][0]["duration"]["value"];
+
+    return directiondetailsInfo;
   }
 }
