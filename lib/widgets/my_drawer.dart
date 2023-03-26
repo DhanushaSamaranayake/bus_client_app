@@ -20,18 +20,21 @@ class _MyDrawerState extends State<MyDrawer> {
         children: [
           //drawer header
           Container(
-              height: 165,
-              color: Colors.grey,
+              height: 170,
+              color: Colors.white,
               child: DrawerHeader(
                   decoration: const BoxDecoration(
-                    color: Colors.black,
+                    color: Color(0xFF0076CB),
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10)),
                   ),
                   child: Row(
                     children: [
                       const Icon(
                         Icons.person,
                         size: 60,
-                        color: Colors.grey,
+                        color: Colors.white,
                       ),
                       const SizedBox(
                         width: 16,
@@ -43,7 +46,7 @@ class _MyDrawerState extends State<MyDrawer> {
                               widget.name.toString(),
                               style: const TextStyle(
                                   fontSize: 16,
-                                  color: Colors.grey,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(
@@ -52,14 +55,14 @@ class _MyDrawerState extends State<MyDrawer> {
                             Text(
                               widget.email.toString(),
                               style: const TextStyle(
-                                  fontSize: 12, color: Colors.grey),
+                                  fontSize: 12, color: Colors.white),
                             )
                           ])
                     ],
                   ))),
 
           const SizedBox(
-            height: 12,
+            height: 20,
           ),
 
           GestureDetector(
@@ -67,13 +70,14 @@ class _MyDrawerState extends State<MyDrawer> {
             child: const ListTile(
               leading: Icon(
                 Icons.history,
-                color: Colors.white54,
+                size: 30,
+                color: Color(0xFF0076CB),
               ),
               title: Text(
                 "History",
                 style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white54,
+                  fontSize: 20,
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -84,13 +88,50 @@ class _MyDrawerState extends State<MyDrawer> {
             child: const ListTile(
               leading: Icon(
                 Icons.person,
-                color: Colors.white54,
+                size: 30,
+                color: Color(0xFF0076CB),
               ),
               title: Text(
                 "Visit Profile",
                 style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white54,
+                  fontSize: 20,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+
+          GestureDetector(
+            onTap: () {},
+            child: const ListTile(
+              leading: Icon(
+                Icons.wallet,
+                size: 30,
+                color: Color(0xFF0076CB),
+              ),
+              title: Text(
+                "Payment",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+
+          GestureDetector(
+            onTap: () {},
+            child: const ListTile(
+              leading: Icon(
+                Icons.help_center,
+                size: 30,
+                color: Color(0xFF0076CB),
+              ),
+              title: Text(
+                "Help and Support",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -101,13 +142,14 @@ class _MyDrawerState extends State<MyDrawer> {
             child: const ListTile(
               leading: Icon(
                 Icons.info,
-                color: Colors.white54,
+                size: 30,
+                color: Color(0xFF0076CB),
               ),
               title: Text(
                 "About",
                 style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white54,
+                  fontSize: 20,
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -122,13 +164,14 @@ class _MyDrawerState extends State<MyDrawer> {
             child: const ListTile(
               leading: Icon(
                 Icons.logout,
-                color: Colors.white54,
+                size: 30,
+                color: Color(0xFF0076CB),
               ),
               title: Text(
                 "Sign out",
                 style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white54,
+                  fontSize: 20,
+                  color: Colors.black,
                 ),
               ),
             ),

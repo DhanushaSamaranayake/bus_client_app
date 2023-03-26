@@ -46,7 +46,7 @@ class _MySplashScreenState extends State<MySplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/logo.png',
+              'assets/images/loogo.png',
             ),
             const SizedBox(height: 20),
             const Text(
@@ -57,7 +57,7 @@ class _MySplashScreenState extends State<MySplashScreen> {
               ),
             ),
             const Text(
-              'inDriver App',
+              'inClient App',
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,

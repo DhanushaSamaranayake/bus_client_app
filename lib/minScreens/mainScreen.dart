@@ -81,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
         LatLng(userCurrentPosition!.latitude, userCurrentPosition!.longitude);
 
     CameraPosition cameraPosition =
-        CameraPosition(target: latLngPosition, zoom: 14);
+        CameraPosition(target: latLngPosition, zoom: 16);
 
     newGoogleMapController!
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
@@ -94,22 +94,13 @@ class _MainScreenState extends State<MainScreen> {
 
   busThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
-                   [
+                [
     {
         "featureType": "administrative",
-        "elementType": "all",
+        "elementType": "labels.text.fill",
         "stylers": [
             {
-                "saturation": "-100"
-            }
-        ]
-    },
-    {
-        "featureType": "administrative.province",
-        "elementType": "all",
-        "stylers": [
-            {
-                "visibility": "off"
+                "color": "#444444"
             }
         ]
     },
@@ -118,13 +109,7 @@ class _MainScreenState extends State<MainScreen> {
         "elementType": "all",
         "stylers": [
             {
-                "saturation": -100
-            },
-            {
-                "lightness": 65
-            },
-            {
-                "visibility": "on"
+                "color": "#f2f2f2"
             }
         ]
     },
@@ -133,13 +118,79 @@ class _MainScreenState extends State<MainScreen> {
         "elementType": "all",
         "stylers": [
             {
-                "saturation": -100
-            },
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "poi.attraction",
+        "elementType": "all",
+        "stylers": [
             {
-                "lightness": "50"
-            },
+                "visibility": "on"
+            }
+        ]
+    },
+    {
+        "featureType": "poi.business",
+        "elementType": "labels.text",
+        "stylers": [
             {
-                "visibility": "simplified"
+                "weight": "0.01"
+            }
+        ]
+    },
+    {
+        "featureType": "poi.business",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "color": "#dfdfdf"
+            }
+        ]
+    },
+    {
+        "featureType": "poi.government",
+        "elementType": "all",
+        "stylers": [
+            {
+                "visibility": "on"
+            }
+        ]
+    },
+    {
+        "featureType": "poi.medical",
+        "elementType": "all",
+        "stylers": [
+            {
+                "visibility": "on"
+            }
+        ]
+    },
+    {
+        "featureType": "poi.park",
+        "elementType": "all",
+        "stylers": [
+            {
+                "visibility": "on"
+            }
+        ]
+    },
+    {
+        "featureType": "poi.school",
+        "elementType": "all",
+        "stylers": [
+            {
+                "visibility": "on"
+            }
+        ]
+    },
+    {
+        "featureType": "poi.sports_complex",
+        "elementType": "all",
+        "stylers": [
+            {
+                "visibility": "on"
             }
         ]
     },
@@ -148,28 +199,10 @@ class _MainScreenState extends State<MainScreen> {
         "elementType": "all",
         "stylers": [
             {
-                "saturation": "-100"
+                "saturation": -100
             },
             {
-                "color": "#0e34b0"
-            }
-        ]
-    },
-    {
-        "featureType": "road",
-        "elementType": "geometry.fill",
-        "stylers": [
-            {
-                "color": "#0e34b0"
-            }
-        ]
-    },
-    {
-        "featureType": "road",
-        "elementType": "labels.text.fill",
-        "stylers": [
-            {
-                "color": "#0e34b0"
+                "lightness": 45
             }
         ]
     },
@@ -178,10 +211,34 @@ class _MainScreenState extends State<MainScreen> {
         "elementType": "all",
         "stylers": [
             {
+                "visibility": "simplified"
+            }
+        ]
+    },
+    {
+        "featureType": "road.highway",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "color": "#fefefe"
+            },
+            {
+                "visibility": "on"
+            }
+        ]
+    },
+    {
+        "featureType": "road.highway",
+        "elementType": "geometry.stroke",
+        "stylers": [
+            {
+                "weight": "1.0"
+            },
+            {
                 "visibility": "on"
             },
             {
-                "color": "#0e34b0"
+                "color": "#bae7ff"
             }
         ]
     },
@@ -190,13 +247,7 @@ class _MainScreenState extends State<MainScreen> {
         "elementType": "all",
         "stylers": [
             {
-                "lightness": "30"
-            },
-            {
                 "visibility": "on"
-            },
-            {
-                "color": "#612121"
             }
         ]
     },
@@ -205,22 +256,40 @@ class _MainScreenState extends State<MainScreen> {
         "elementType": "geometry.fill",
         "stylers": [
             {
-                "color": "#0e34b0"
+                "visibility": "on"
+            },
+            {
+                "color": "#ffffff"
+            }
+        ]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "geometry.stroke",
+        "stylers": [
+            {
+                "color": "#bae7ff"
+            }
+        ]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
             }
         ]
     },
     {
         "featureType": "road.local",
-        "elementType": "all",
+        "elementType": "geometry.fill",
         "stylers": [
-            {
-                "lightness": "40"
-            },
             {
                 "visibility": "on"
             },
             {
-                "color": "#71906d"
+                "color": "#e3e3e3"
             }
         ]
     },
@@ -229,76 +298,76 @@ class _MainScreenState extends State<MainScreen> {
         "elementType": "all",
         "stylers": [
             {
-                "saturation": -100
-            },
-            {
-                "visibility": "simplified"
-            }
-        ]
-    },
-    {
-        "featureType": "transit.line",
-        "elementType": "all",
-        "stylers": [
-            {
-                "visibility": "off"
-            },
-            {
-                "color": "#dd0c0c"
-            }
-        ]
-    },
-    {
-        "featureType": "transit.line",
-        "elementType": "geometry.fill",
-        "stylers": [
-            {
-                "color": "#4eb0e4"
-            }
-        ]
-    },
-    {
-        "featureType": "transit.station.airport",
-        "elementType": "all",
-        "stylers": [
-            {
                 "visibility": "off"
             }
         ]
     },
     {
-        "featureType": "transit.station.rail",
+        "featureType": "transit.station.bus",
         "elementType": "all",
         "stylers": [
             {
-                "visibility": "off"
+                "visibility": "on"
             }
         ]
     },
     {
-        "featureType": "water",
+        "featureType": "transit.station.bus",
         "elementType": "geometry",
         "stylers": [
             {
-                "hue": "#ffff00"
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "transit.station.bus",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "visibility": "off"
             },
             {
-                "lightness": -25
-            },
+                "color": "#da2525"
+            }
+        ]
+    },
+    {
+        "featureType": "transit.station.bus",
+        "elementType": "labels.text",
+        "stylers": [
             {
-                "saturation": -97
+                "color": "#000000"
+            }
+        ]
+    },
+    {
+        "featureType": "transit.station.bus",
+        "elementType": "labels.text.fill",
+        "stylers": [
+            {
+                "color": "#ff0000"
+            }
+        ]
+    },
+    {
+        "featureType": "transit.station.bus",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "on"
             }
         ]
     },
     {
         "featureType": "water",
-        "elementType": "labels",
+        "elementType": "all",
         "stylers": [
             {
-                "lightness": -25
+                "color": "#46bcec"
             },
             {
-                "saturation": -100
+                "visibility": "on"
             }
         ]
     }
@@ -319,10 +388,9 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       key: sKey,
       drawer: Container(
-        width: 270,
+        width: 340,
         child: Theme(
-          data: Theme.of(context)
-              .copyWith(canvasColor: Colors.black.withOpacity(0.8)),
+          data: Theme.of(context).copyWith(canvasColor: Colors.white),
           child: MyDrawer(
             email: userModelCurrentInfo?.email,
             name: userModelCurrentInfo?.name,
@@ -523,7 +591,7 @@ class _MainScreenState extends State<MainScreen> {
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontFamily: 'Brand-Bold'),
-                            primary: Colors.black,
+                            primary: Color(0xFF0076CB),
                             shadowColor: Colors.black54,
                             shape: const RoundedRectangleBorder(
                                 borderRadius:
@@ -586,7 +654,7 @@ class _MainScreenState extends State<MainScreen> {
           color: Colors.black,
           jointType: JointType.round,
           points: pLineCoordinates,
-          width: 8,
+          width: 3,
           startCap: Cap.roundCap,
           endCap: Cap.roundCap,
           geodesic: true);

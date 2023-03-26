@@ -48,7 +48,7 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
           Container(
             height: 160,
             decoration: const BoxDecoration(
-                color: Colors.black54,
+                color: Color(0xFF0076CB),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black54,
