@@ -40,6 +40,9 @@ class _MainScreenState extends State<MainScreen> {
   List<LatLng> pLineCoordinates = [];
   Set<Polyline> polylineSet = {};
 
+  Set<Marker> markersSet = {};
+  Set<Circle> circlesSet = {};
+
   //LocationPermission? _locationPermission;
 
   /*checkIfLocationPermissionAllowed() async {
@@ -336,6 +339,8 @@ class _MainScreenState extends State<MainScreen> {
             zoomControlsEnabled: true,
             initialCameraPosition: _kGooglePlex,
             polylines: polylineSet,
+            markers: markersSet,
+            circles: circlesSet,
             onMapCreated: (GoogleMapController controller) {
               _controllerGoogleMap.complete(controller);
               newGoogleMapController = controller;
@@ -581,12 +586,79 @@ class _MainScreenState extends State<MainScreen> {
           color: Colors.black,
           jointType: JointType.round,
           points: pLineCoordinates,
-          width: 5,
+          width: 8,
           startCap: Cap.roundCap,
           endCap: Cap.roundCap,
           geodesic: true);
 
       polylineSet.add(polyline);
+    });
+
+    LatLngBounds boundsLatlng;
+    if (originLatLng.latitude > destinationLatLng.latitude &&
+        originLatLng.longitude > destinationLatLng.longitude) {
+      boundsLatlng =
+          LatLngBounds(southwest: destinationLatLng, northeast: originLatLng);
+    } else if (originLatLng.longitude > destinationLatLng.longitude) {
+      boundsLatlng = LatLngBounds(
+        southwest: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+        northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
+      );
+    } else if (originLatLng.latitude > destinationLatLng.latitude) {
+      boundsLatlng = LatLngBounds(
+        southwest: LatLng(destinationLatLng.latitude, originLatLng.longitude),
+        northeast: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+      );
+    } else {
+      boundsLatlng =
+          LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
+    }
+
+    newGoogleMapController!
+        .animateCamera(CameraUpdate.newLatLngBounds(boundsLatlng, 70));
+
+    Marker originMarker = Marker(
+        markerId: const MarkerId("originID"),
+        infoWindow: InfoWindow(
+            title: originPosition.locationName, snippet: "destination"),
+        position: originLatLng,
+        icon:
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow));
+
+    Marker destinationMarker = Marker(
+        markerId: const MarkerId("destinationID"),
+        infoWindow: InfoWindow(
+            title: destinationPosition.locationName, snippet: "destination"),
+        position: destinationLatLng,
+        icon:
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange));
+
+    setState(() {
+      markersSet.add(originMarker);
+      markersSet.add(destinationMarker);
+    });
+
+    Circle originCircle = Circle(
+      circleId: const CircleId("originID"),
+      fillColor: Colors.blue,
+      center: originLatLng,
+      radius: 12,
+      strokeWidth: 4,
+      strokeColor: const Color.fromARGB(255, 125, 170, 249),
+    );
+
+    Circle destinationCircle = Circle(
+      circleId: const CircleId("destinationID"),
+      fillColor: Colors.red,
+      center: destinationLatLng,
+      radius: 12,
+      strokeWidth: 4,
+      strokeColor: const Color.fromARGB(255, 249, 125, 125),
+    );
+
+    setState(() {
+      circlesSet.add(originCircle);
+      circlesSet.add(destinationCircle);
     });
   }
 }
