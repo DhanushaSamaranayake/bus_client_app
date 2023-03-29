@@ -1,13 +1,17 @@
 import 'dart:async';
 
 import 'package:bus_client_app/assistants/assistents_methods.dart';
+import 'package:bus_client_app/assistants/geofire_assistant.dart';
 import 'package:bus_client_app/auth/login.dart';
 import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/infoHandler/appInfo.dart';
 import 'package:bus_client_app/minScreens/search_places_screen.dart';
+import 'package:bus_client_app/models/active_nearby_available_drivers.dart';
 import 'package:bus_client_app/widgets/my_drawer.dart';
 import 'package:bus_client_app/widgets/progress.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -42,6 +46,13 @@ class _MainScreenState extends State<MainScreen> {
 
   Set<Marker> markersSet = {};
   Set<Circle> circlesSet = {};
+
+  String userName = "Your Name";
+  String userEmail = "Your Email";
+
+  bool openNavigationDrawer = true;
+  bool activeNearByDriverKeysLoaded = false;
+  BitmapDescriptor? activeNearByIcon;
 
   //LocationPermission? _locationPermission;
 
@@ -90,6 +101,11 @@ class _MainScreenState extends State<MainScreen> {
         await AssistantMethods.searchAddressForGeographCordinates(
             userCurrentPosition!, context);
     print("this is your address = " + humanReadableAddress);
+
+    userName = userModelCurrentInfo!.name!;
+    userEmail = userModelCurrentInfo!.email!;
+
+    initiaLizeGeoFireListner();
   }
 
   busThemeGoogleMap() {
@@ -385,6 +401,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    createActiveNearByDriverIconMarker();
     return Scaffold(
       key: sKey,
       drawer: Container(
@@ -392,8 +409,8 @@ class _MainScreenState extends State<MainScreen> {
         child: Theme(
           data: Theme.of(context).copyWith(canvasColor: Colors.white),
           child: MyDrawer(
-            email: userModelCurrentInfo?.email,
-            name: userModelCurrentInfo?.name,
+            email: userEmail,
+            name: userName,
           ),
         ),
       ),
@@ -429,7 +446,12 @@ class _MainScreenState extends State<MainScreen> {
             left: 22,
             child: GestureDetector(
               onTap: () {
-                sKey.currentState!.openDrawer();
+                if (openNavigationDrawer) {
+                  sKey.currentState!.openDrawer();
+                } else {
+                  //restart app automaticly
+                  SystemNavigator.pop();
+                }
               },
               child: Container(
                 decoration: const BoxDecoration(
@@ -439,10 +461,10 @@ class _MainScreenState extends State<MainScreen> {
                         blurRadius: 10, color: Colors.black54, spreadRadius: 8)
                   ],
                 ),
-                child: const CircleAvatar(
+                child: CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Icon(
-                    Icons.menu,
+                    openNavigationDrawer ? Icons.menu : Icons.close,
                     color: Colors.black54,
                   ),
                 ),
@@ -534,6 +556,9 @@ class _MainScreenState extends State<MainScreen> {
                                   builder: (c) => SearchPlacesScreen()));
 
                           if (responseFromSearchScreen == "obtainedDropoff") {
+                            setState(() {
+                              openNavigationDrawer = false;
+                            });
                             //draw routes / draw polyline
                             await drawPolyLineFromOriginToDestination();
                           }
@@ -728,5 +753,98 @@ class _MainScreenState extends State<MainScreen> {
       circlesSet.add(originCircle);
       circlesSet.add(destinationCircle);
     });
+  }
+
+  initiaLizeGeoFireListner() {
+    Geofire.initialize("activeDrivers");
+    Geofire.queryAtLocation(
+            userCurrentPosition!.latitude, userCurrentPosition!.longitude, 10)!
+        .listen((map) {
+      print(map);
+      if (map != null) {
+        var callBack = map['callBack'];
+
+        //latitude will be retrieved from map['latitude']
+        //longitude will be retrieved from map['longitude']
+
+        switch (callBack) {
+          //whenever any driver become active-online
+          case Geofire.onKeyEntered:
+            ActiveNearByAvailableDrivers activeNearByAvailableDrivers =
+                ActiveNearByAvailableDrivers();
+            activeNearByAvailableDrivers.locationLatitude = map['latitude'];
+            activeNearByAvailableDrivers.locationLongitude = map['longitude'];
+            activeNearByAvailableDrivers.driverId = map['key'];
+            GeoFireAssistant.activeNearByAvailableDriversList
+                .add(activeNearByAvailableDrivers);
+            if (activeNearByDriverKeysLoaded == true) {
+              displayActiveDriversOnUsersMap();
+            }
+            break;
+          //whenever any driver become nonactive-online/offline
+          case Geofire.onKeyExited:
+            GeoFireAssistant.deleteOfflineDriverFromList(map['key']);
+            break;
+          //update driver moves - update driver location
+          case Geofire.onKeyMoved:
+            ActiveNearByAvailableDrivers activeNearByAvailableDrivers =
+                ActiveNearByAvailableDrivers();
+            activeNearByAvailableDrivers.locationLatitude = map['latitude'];
+            activeNearByAvailableDrivers.locationLongitude = map['longitude'];
+            activeNearByAvailableDrivers.driverId = map['key'];
+            GeoFireAssistant.updateNearByAvailableDriversLocation(
+                activeNearByAvailableDrivers);
+            displayActiveDriversOnUsersMap();
+            break;
+          //display those online/active drivers on user's map
+          case Geofire.onGeoQueryReady:
+            activeNearByDriverKeysLoaded = true;
+            displayActiveDriversOnUsersMap();
+            break;
+        }
+      }
+
+      setState(() {});
+    });
+  }
+
+  displayActiveDriversOnUsersMap() {
+    setState(() {
+      markersSet.clear();
+      circlesSet.clear();
+
+      Set<Marker> driversMarkerSet = Set<Marker>();
+
+      for (ActiveNearByAvailableDrivers eachDriver
+          in GeoFireAssistant.activeNearByAvailableDriversList) {
+        LatLng eachDriverActivePosition =
+            LatLng(eachDriver.locationLatitude!, eachDriver.locationLongitude!);
+        Marker marker = Marker(
+          markerId: MarkerId(eachDriver.driverId!),
+          position: eachDriverActivePosition,
+          icon: activeNearByIcon!,
+          rotation: 360,
+        );
+
+        driversMarkerSet.add(marker);
+      }
+
+      setState(() {
+        markersSet = driversMarkerSet;
+      });
+    });
+  }
+
+  //creat  icon marker
+  createActiveNearByDriverIconMarker() {
+    if (activeNearByIcon == null) {
+      ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context, size: const Size(2, 2));
+      BitmapDescriptor.fromAssetImage(
+              imageConfiguration, "assets/images/car.png")
+          .then((value) {
+        activeNearByIcon = value;
+      });
+    }
   }
 }
