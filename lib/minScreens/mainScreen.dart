@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -609,7 +610,15 @@ class _MainScreenState extends State<MainScreen> {
                       ),
 
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (Provider.of<AppInfo>(context, listen: false)
+                                  .userDropOfLocation !=
+                              null) {
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "Please Select Destination Location");
+                          }
+                        },
                         child: const Text('Request a Ride'),
                         style: ElevatedButton.styleFrom(
                             textStyle: const TextStyle(
