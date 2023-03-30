@@ -430,7 +430,7 @@ class _MainScreenState extends State<MainScreen> {
     DatabaseReference ref = FirebaseDatabase.instance.ref().child("drivers");
     for (int i = 0; i < onlineNearestDriverList.length; i++) {
       await ref
-          .child(onlineNearestDriverList[i].Key.toString())
+          .child(onlineNearestDriverList[i].driverId.toString())
           .once()
           .then((dataSnapshot) {
         var driverInfoKey = dataSnapshot.snapshot.value;
