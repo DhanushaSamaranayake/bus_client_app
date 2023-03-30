@@ -5,10 +5,12 @@ import 'package:bus_client_app/assistants/geofire_assistant.dart';
 import 'package:bus_client_app/auth/login.dart';
 import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/infoHandler/appInfo.dart';
+import 'package:bus_client_app/main.dart';
 import 'package:bus_client_app/minScreens/search_places_screen.dart';
 import 'package:bus_client_app/models/active_nearby_available_drivers.dart';
 import 'package:bus_client_app/widgets/my_drawer.dart';
 import 'package:bus_client_app/widgets/progress.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
@@ -54,6 +56,8 @@ class _MainScreenState extends State<MainScreen> {
   bool openNavigationDrawer = true;
   bool activeNearByDriverKeysLoaded = false;
   BitmapDescriptor? activeNearByIcon;
+
+  List<ActiveNearByAvailableDrivers> onlineNearByAvailableDriversList = [];
 
   //LocationPermission? _locationPermission;
 
@@ -392,6 +396,50 @@ class _MainScreenState extends State<MainScreen> {
                 ''');
   }
 
+  saveRideRequestInformation() {
+    //save the ride request information
+    onlineNearByAvailableDriversList =
+        GeoFireAssistant.activeNearByAvailableDriversList;
+    searchNearestOnlineDrivers();
+  }
+
+  searchNearestOnlineDrivers() async {
+    //no active driver available
+    if (onlineNearByAvailableDriversList.length == 0) {
+      //cancel the ride request info
+      setState(() {
+        polylineSet.clear();
+        markersSet.clear();
+        circlesSet.clear();
+        pLineCoordinates.clear();
+      });
+
+      Fluttertoast.showToast(msg: "No online Nearest Driver Available.");
+      Fluttertoast.showToast(msg: "Restarting App");
+      Future.delayed(const Duration(milliseconds: 4000), () {
+        MyApp.restartApp(context);
+      });
+
+      return;
+    }
+
+    await retriveOnlineDriverInfo(onlineNearByAvailableDriversList);
+  }
+
+  retriveOnlineDriverInfo(List onlineNearestDriverList) async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref().child("drivers");
+    for (int i = 0; i < onlineNearestDriverList.length; i++) {
+      await ref
+          .child(onlineNearestDriverList[i].Key.toString())
+          .once()
+          .then((dataSnapshot) {
+        var driverInfoKey = dataSnapshot.snapshot.value;
+        dList.add(driverInfoKey);
+        print("Driver Key Info = " + dList.toString());
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -614,6 +662,7 @@ class _MainScreenState extends State<MainScreen> {
                           if (Provider.of<AppInfo>(context, listen: false)
                                   .userDropOfLocation !=
                               null) {
+                            saveRideRequestInformation();
                           } else {
                             Fluttertoast.showToast(
                                 msg: "Please Select Destination Location");
