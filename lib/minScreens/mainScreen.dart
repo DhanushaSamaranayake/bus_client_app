@@ -428,8 +428,8 @@ class _MainScreenState extends State<MainScreen> {
       "time": DateTime.now().toString(),
       "userName": userModelCurrentInfo!.name,
       "userPhone": userModelCurrentInfo!.phone,
-      "originAddress": originLocation.humanReadableAddress,
-      "destinationAddress": destinationLocation.humanReadableAddress,
+      "originAddress": originLocation.locationName,
+      "destinationAddress": destinationLocation.locationName,
       "driverId": "waiting",
     };
 
