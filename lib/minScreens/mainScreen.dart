@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:bus_client_app/assistants/assistents_methods.dart';
 import 'package:bus_client_app/assistants/geofire_assistant.dart';
-import 'package:bus_client_app/auth/login.dart';
 import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/infoHandler/appInfo.dart';
 import 'package:bus_client_app/main.dart';
 import 'package:bus_client_app/minScreens/search_places_screen.dart';
+import 'package:bus_client_app/minScreens/select_online_neartestdrivers.dart';
 import 'package:bus_client_app/models/active_nearby_available_drivers.dart';
 import 'package:bus_client_app/widgets/my_drawer.dart';
 import 'package:bus_client_app/widgets/progress.dart';
@@ -58,6 +58,8 @@ class _MainScreenState extends State<MainScreen> {
   BitmapDescriptor? activeNearByIcon;
 
   List<ActiveNearByAvailableDrivers> onlineNearByAvailableDriversList = [];
+
+  DatabaseReference? referenceRideRequest;
 
   //LocationPermission? _locationPermission;
 
@@ -398,6 +400,41 @@ class _MainScreenState extends State<MainScreen> {
 
   saveRideRequestInformation() {
     //save the ride request information
+
+    referenceRideRequest = FirebaseDatabase.instance
+        .ref()
+        .child("All Ride Requests")
+        .push(); //push() genarate unique ID
+    var originLocation =
+        Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
+    var destinationLocation =
+        Provider.of<AppInfo>(context, listen: false).userDropOfLocation;
+
+    Map originLocationMap = {
+      //"key" : value,
+      "latitude": originLocation!.locationLatitude.toString(),
+      "longitude": originLocation!.locationLongitude.toString(),
+    };
+
+    Map destinationLocationMap = {
+      //"key" : value,
+      "latitude": destinationLocation!.locationLatitude.toString(),
+      "longitude": destinationLocation!.locationLongitude.toString(),
+    };
+
+    Map userInfoMap = {
+      "origin": originLocationMap,
+      "destination": destinationLocationMap,
+      "time": DateTime.now().toString(),
+      "userName": userModelCurrentInfo!.name,
+      "userPhone": userModelCurrentInfo!.phone,
+      "originAddress": originLocation.humanReadableAddress,
+      "destinationAddress": destinationLocation.humanReadableAddress,
+      "driverId": "waiting",
+    };
+
+    referenceRideRequest!.set(userInfoMap);
+
     onlineNearByAvailableDriversList =
         GeoFireAssistant.activeNearByAvailableDriversList;
     searchNearestOnlineDrivers();
@@ -407,6 +444,8 @@ class _MainScreenState extends State<MainScreen> {
     //no active driver available
     if (onlineNearByAvailableDriversList.length == 0) {
       //cancel the ride request info
+      referenceRideRequest!.remove();
+
       setState(() {
         polylineSet.clear();
         markersSet.clear();
@@ -417,13 +456,19 @@ class _MainScreenState extends State<MainScreen> {
       Fluttertoast.showToast(msg: "No online Nearest Driver Available.");
       Fluttertoast.showToast(msg: "Restarting App");
       Future.delayed(const Duration(milliseconds: 4000), () {
-        MyApp.restartApp(context);
+        //MyApp.restartApp(context);
+        SystemNavigator.pop();
       });
 
       return;
     }
 
     await retriveOnlineDriverInfo(onlineNearByAvailableDriversList);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (c) => SelectNearestActiveDriversScreen(
+                referenceRideRequest: referenceRideRequest)));
   }
 
   retriveOnlineDriverInfo(List onlineNearestDriverList) async {
@@ -435,7 +480,6 @@ class _MainScreenState extends State<MainScreen> {
           .then((dataSnapshot) {
         var driverInfoKey = dataSnapshot.snapshot.value;
         dList.add(driverInfoKey);
-        print("Driver Key Info = " + dList.toString());
       });
     }
   }
@@ -711,6 +755,10 @@ class _MainScreenState extends State<MainScreen> {
     var directionDetailsInfo =
         await AssistantMethods.obtainOriginToDestinationDirectionDetails(
             originLatLng, destinationLatLng);
+
+    setState(() {
+      tripDirectionDetailsInfo = directionDetailsInfo;
+    });
 
     Navigator.pop(context);
     print("These are Points = ");

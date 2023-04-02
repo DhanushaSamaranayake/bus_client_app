@@ -76,4 +76,20 @@ class AssistantMethods {
 
     return directiondetailsInfo;
   }
+
+  static double calculateFareAmountFromOriginToDestination(
+      DirectionDetailsInfo directionDetailsInfo) {
+    double timeTraveledFarePerMin =
+        (directionDetailsInfo.duration_value! / 60) * 0.2;
+    double distanceTraveledFarePerKM =
+        (directionDetailsInfo.distance_value! / 1000) * 0.2;
+    //USD type currency
+    double totalFareAmount = timeTraveledFarePerMin + distanceTraveledFarePerKM;
+
+    //convert to local currency 1 USD = 320 LKR
+    double totalLocalAmount = totalFareAmount * 320;
+
+    return double.parse(
+        totalLocalAmount.toStringAsFixed(2)); //21.3333 rounded amount
+  }
 }
