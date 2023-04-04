@@ -464,11 +464,40 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     await retriveOnlineDriverInfo(onlineNearByAvailableDriversList);
-    Navigator.push(
+    // ignore: use_build_context_synchronously
+    var response = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (c) => SelectNearestActiveDriversScreen(
                 referenceRideRequest: referenceRideRequest)));
+    if (response == "driverChoosed") {
+      FirebaseDatabase.instance
+          .ref()
+          .child("drivers")
+          .child(driverChoosenId!)
+          .once()
+          .then((snap) {
+        if (snap.snapshot.value != null) {
+          //send notification to that specific driver
+          sendNotificationToDriverNow(driverChoosenId!);
+        } else {
+          Fluttertoast.showToast(msg: "This driver do not Exist, Try again..");
+        }
+      });
+    }
+  }
+
+  sendNotificationToDriverNow(String driverChoosenId) {
+    //assign riderequestid to newridestatus in driver
+    //parent node for that specific choosen driver
+    FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(driverChoosenId!)
+        .child("newRideStatus")
+        .set(referenceRideRequest!.key);
+
+    //Automate push notification
   }
 
   retriveOnlineDriverInfo(List onlineNearestDriverList) async {

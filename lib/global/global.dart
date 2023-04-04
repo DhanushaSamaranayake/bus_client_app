@@ -7,3 +7,4 @@ User? currentFirebaseUser;
 UserModel? userModelCurrentInfo;
 List dList = []; //driversKey info list
 DirectionDetailsInfo? tripDirectionDetailsInfo;
+String? driverChoosenId = "";

@@ -71,83 +71,91 @@ class _SelectNearestActiveDriversScreen
         body: ListView.builder(
             itemCount: dList.length,
             itemBuilder: (BuildContext context, int index) {
-              return Card(
-                color: Colors.grey,
-                elevation: 3,
-                shadowColor: Colors.green,
-                margin: const EdgeInsets.all(8),
-                child: ListTile(
-                  leading: Padding(
-                    padding: const EdgeInsets.only(top: 2.0),
-                    child: Image.asset(
-                      "assets/images/" +
-                          dList[index]["bus_details"]["bus_type"].toString() +
-                          ".png",
-                      width: 70,
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    driverChoosenId = dList[index]["id"].toString();
+                  });
+                  Navigator.pop(context, "driverChoosed");
+                },
+                child: Card(
+                  color: Colors.grey,
+                  elevation: 3,
+                  shadowColor: Colors.green,
+                  margin: const EdgeInsets.all(8),
+                  child: ListTile(
+                    leading: Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Image.asset(
+                        "assets/images/" +
+                            dList[index]["bus_details"]["bus_type"].toString() +
+                            ".png",
+                        width: 70,
+                      ),
                     ),
-                  ),
-                  title: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        dList[index]["name"],
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        dList[index]["bus_details"]["bus_model"],
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white54,
-                        ),
-                      ),
-                      SmoothStarRating(
-                        rating: 3.5,
-                        color: Colors.black,
-                        borderColor: Colors.black,
-                        allowHalfRating: true,
-                        starCount: 5,
-                        size: 15,
-                      )
-                    ],
-                  ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Rs " + getFareAmountAccordingToVehicalType(index),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 2,
-                      ),
-                      Text(
-                        tripDirectionDetailsInfo != null
-                            ? tripDirectionDetailsInfo!.distance_text!
-                            : "0",
-                        style: const TextStyle(
+                    title: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          dList[index]["name"],
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                            fontSize: 12),
-                      ),
-                      const SizedBox(
-                        height: 2,
-                      ),
-                      Text(
-                        tripDirectionDetailsInfo != null
-                            ? tripDirectionDetailsInfo!.duration_text!
-                            : "0",
-                        style: const TextStyle(
+                          ),
+                        ),
+                        Text(
+                          dList[index]["bus_details"]["bus_model"],
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white54,
+                          ),
+                        ),
+                        SmoothStarRating(
+                          rating: 3.5,
+                          color: Colors.black,
+                          borderColor: Colors.black,
+                          allowHalfRating: true,
+                          starCount: 5,
+                          size: 15,
+                        )
+                      ],
+                    ),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Rs " + getFareAmountAccordingToVehicalType(index),
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                            fontSize: 12),
-                      ),
-                    ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Text(
+                          tripDirectionDetailsInfo != null
+                              ? tripDirectionDetailsInfo!.distance_text!
+                              : "0",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontSize: 12),
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Text(
+                          tripDirectionDetailsInfo != null
+                              ? tripDirectionDetailsInfo!.duration_text!
+                              : "0",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontSize: 12),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
