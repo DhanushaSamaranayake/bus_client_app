@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:bus_client_app/assistants/assistents_methods.dart';
 import 'package:bus_client_app/assistants/geofire_assistant.dart';
 import 'package:bus_client_app/global/global.dart';
@@ -40,6 +41,8 @@ class _MainScreenState extends State<MainScreen> {
 
   double searchLocationContainerHeight = 220;
   double bottomPaddingOfMap = 0;
+  double waitingResponseFromDriverContainerHeight = 0;
+  double assignedDriverInfoContainerHeight = 0;
 
   Position? userCurrentPosition;
   var geolocator = Geolocator();
@@ -481,6 +484,7 @@ class _MainScreenState extends State<MainScreen> {
           //send notification to that specific driver
           sendNotificationToDriverNow(driverChoosenId!);
           //Display waiting  response from a driver UI
+          showWaitingResponseUI();
 
           //response from a driver
           FirebaseDatabase.instance
@@ -507,6 +511,7 @@ class _MainScreenState extends State<MainScreen> {
             //(newRideStatus = accepted)
             if (eventSnapshot.snapshot.value == "accepted") {
               //Design and display UI for displaying aasigned driver information
+              showUIForAssignedDriverInfo();
             }
           });
         } else {
@@ -514,6 +519,21 @@ class _MainScreenState extends State<MainScreen> {
         }
       });
     }
+  }
+
+  showUIForAssignedDriverInfo() {
+    setState(() {
+      waitingResponseFromDriverContainerHeight = 0;
+
+      assignedDriverInfoContainerHeight = 220;
+    });
+  }
+
+  showWaitingResponseUI() {
+    setState(() {
+      searchLocationContainerHeight = 0;
+      waitingResponseFromDriverContainerHeight = 220;
+    });
   }
 
   sendNotificationToDriverNow(String driverChoosenId) {
@@ -800,6 +820,49 @@ class _MainScreenState extends State<MainScreen> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(24)))),
                       )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          //ui for waiting response from driver
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: waitingResponseFromDriverContainerHeight,
+              decoration: const BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(20),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Center(
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      FadeAnimatedText(
+                        'Waiting for Response\nfrom Driver',
+                        duration: const Duration(seconds: 6),
+                        textAlign: TextAlign.center,
+                        textStyle: const TextStyle(
+                            fontSize: 30.0,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      ScaleAnimatedText(
+                        'Please wait...',
+                        duration: const Duration(seconds: 10),
+                        textAlign: TextAlign.center,
+                        textStyle: const TextStyle(
+                            fontSize: 32.0,
+                            color: Colors.white,
+                            fontFamily: 'Canterbury'),
+                      ),
                     ],
                   ),
                 ),
