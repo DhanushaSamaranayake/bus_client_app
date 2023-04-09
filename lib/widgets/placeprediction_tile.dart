@@ -1,4 +1,5 @@
 import 'package:bus_client_app/assistants/req_assistens.dart';
+import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/global/map_key.dart';
 import 'package:bus_client_app/infoHandler/appInfo.dart';
 import 'package:bus_client_app/models/directions.dart';
@@ -7,9 +8,17 @@ import 'package:bus_client_app/widgets/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PlacePredictionTileDesign extends StatelessWidget {
+class PlacePredictionTileDesign extends StatefulWidget {
   final PredictedPlaces? predictedPlaces;
 
+  PlacePredictionTileDesign({this.predictedPlaces});
+
+  @override
+  State<PlacePredictionTileDesign> createState() =>
+      _PlacePredictionTileDesignState();
+}
+
+class _PlacePredictionTileDesignState extends State<PlacePredictionTileDesign> {
   getPlaceDirectionDetails(String? placeId, context) async {
     showDialog(
         context: context,
@@ -38,18 +47,19 @@ class PlacePredictionTileDesign extends StatelessWidget {
 
       Provider.of<AppInfo>(context, listen: false)
           .updateDropOfLocationAddress(directions);
+      setState(() {
+        userDropOffAdress = directions.locationName!;
+      });
 
       Navigator.pop(context, "obtainedDropoff");
     }
   }
 
-  PlacePredictionTileDesign({this.predictedPlaces});
-
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        getPlaceDirectionDetails(predictedPlaces!.place_id, context);
+        getPlaceDirectionDetails(widget.predictedPlaces!.place_id, context);
       },
       style: ElevatedButton.styleFrom(
         primary: Colors.white,
@@ -74,7 +84,7 @@ class PlacePredictionTileDesign extends StatelessWidget {
                 height: 8,
               ),
               Text(
-                predictedPlaces!.main_text!,
+                widget.predictedPlaces!.main_text!,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 16, color: Colors.black),
               ),
@@ -82,7 +92,7 @@ class PlacePredictionTileDesign extends StatelessWidget {
                 height: 2,
               ),
               Text(
-                predictedPlaces!.secondary_text!,
+                widget.predictedPlaces!.secondary_text!,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 12, color: Colors.black),
               ),

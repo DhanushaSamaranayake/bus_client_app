@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:bus_client_app/assistants/req_assistens.dart';
 import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/global/map_key.dart';
@@ -10,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class AssistantMethods {
   static Future<String> searchAddressForGeographCordinates(
@@ -91,5 +93,38 @@ class AssistantMethods {
 
     return double.parse(
         totalLocalAmount.toStringAsFixed(2)); //21.3333 rounded amount
+  }
+
+  static sendNotificationDriverNow(
+      String deviceRegistrationToken, String userRideRequestId, context) async {
+    String destinationAdrees = userDropOffAdress;
+    Map<String, String> headerNotification = {
+      "Authorization": cloudMessagingServerToken,
+      "Content-Type": "application/json"
+    };
+
+    Map bodyNotification = {
+      "title": "New Ride Request",
+      "body": "Destination Address : \n$destinationAdrees."
+    };
+
+    Map datamap = {
+      "click_action": "FLUTTER_NOTIFICATION_CLICK",
+      "id": "1",
+      "status": "done",
+      "rideRequestId": userRideRequestId
+    };
+
+    Map officalNotificationFormat = {
+      "notification": bodyNotification,
+      "data": datamap,
+      "priority": "high",
+      "to": deviceRegistrationToken
+    };
+
+    var responsedNotification = http.post(
+        Uri.parse("https://fcm.googleapis.com/fcm/send"),
+        headers: headerNotification,
+        body: jsonEncode(officalNotificationFormat));
   }
 }

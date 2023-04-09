@@ -480,6 +480,35 @@ class _MainScreenState extends State<MainScreen> {
         if (snap.snapshot.value != null) {
           //send notification to that specific driver
           sendNotificationToDriverNow(driverChoosenId!);
+          //Display waiting  response from a driver UI
+
+          //response from a driver
+          FirebaseDatabase.instance
+              .ref()
+              .child("drivers")
+              .child(driverChoosenId!)
+              .child("newRideStatus")
+              .onValue
+              .listen((eventSnapshot) {
+            //1. driver has cancel the rideRequest :: push notification
+            //(newRideStatus = idle)
+            if (eventSnapshot.snapshot.value == "idle") {
+              Fluttertoast.showToast(
+                  msg:
+                      "Driver has cancel your request. Please choose another driver..");
+              Future.delayed(const Duration(milliseconds: 3000), () {
+                Fluttertoast.showToast(msg: "Please, Restart App Now...");
+
+                SystemNavigator.pop();
+              });
+            }
+
+            //2. driver has accept the rideRequest :: push notification
+            //(newRideStatus = accepted)
+            if (eventSnapshot.snapshot.value == "accepted") {
+              //Design and display UI for displaying aasigned driver information
+            }
+          });
         } else {
           Fluttertoast.showToast(msg: "This driver do not Exist, Try again..");
         }
@@ -497,7 +526,25 @@ class _MainScreenState extends State<MainScreen> {
         .child("newRideStatus")
         .set(referenceRideRequest!.key);
 
-    //Automate push notification
+    //Automate push notification service
+    FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(driverChoosenId!)
+        .child("token")
+        .once()
+        .then((snap) {
+      if (snap.snapshot.value != null) {
+        String deviceRegistrationToken = snap.snapshot.value.toString();
+        //send notification to that specific driver
+        AssistantMethods.sendNotificationDriverNow(deviceRegistrationToken,
+            referenceRideRequest!.key.toString(), context);
+        Fluttertoast.showToast(msg: "Notification send... successfully");
+      } else {
+        Fluttertoast.showToast(msg: "Please choose another driver..");
+        return;
+      }
+    });
   }
 
   retriveOnlineDriverInfo(List onlineNearestDriverList) async {
