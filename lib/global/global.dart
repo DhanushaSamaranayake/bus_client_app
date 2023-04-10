@@ -11,3 +11,6 @@ String? driverChoosenId = "";
 String cloudMessagingServerToken =
     "key=AAAACik0J_g:APA91bG5qqY-BJqXqmp-E6tCpGU0HAHW1wehmJGtOITgdcNwdHH8pR_8FRQ2uXU15goo-wP7AfwM6D8iVcKF_pNcyAMi5YOpW-XS6LunpBuYOLKeoQGw5O-u0wfjWFfzsWOnkaZRS8PN";
 String userDropOffAdress = "";
+String driverBusDetails = "";
+String driverName = "";
+String driverPhone = "";
