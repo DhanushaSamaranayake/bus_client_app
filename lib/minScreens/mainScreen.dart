@@ -4,6 +4,7 @@ import 'package:bus_client_app/assistants/assistents_methods.dart';
 import 'package:bus_client_app/assistants/geofire_assistant.dart';
 import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/infoHandler/appInfo.dart';
+import 'package:bus_client_app/minScreens/rate_driver_screen.dart';
 import 'package:bus_client_app/minScreens/search_places_screen.dart';
 import 'package:bus_client_app/minScreens/select_online_neartestdrivers.dart';
 import 'package:bus_client_app/models/active_nearby_available_drivers.dart';
@@ -514,6 +515,18 @@ class _MainScreenState extends State<MainScreen> {
                   ));
           if (response == "CashPayed") {
             //user can rate the driver ****
+            if ((eventSnap.snapshot.value as Map)["driverId"] != null) {
+              String assignedDriverId =
+                  (eventSnap.snapshot.value as Map)["driverId"].toString();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (c) => RateDriverScreen(
+                            assignedDriverId: assignedDriverId,
+                          )));
+              referenceRideRequest!.onDisconnect();
+              tripRideRequestInfoStreamSubscription!.cancel();
+            }
           }
         }
       }

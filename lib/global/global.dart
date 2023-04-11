@@ -14,3 +14,5 @@ String userDropOffAdress = "";
 String driverBusDetails = "";
 String driverName = "";
 String driverPhone = "";
+double countRatingStars = 0.0;
+String titleRating = "";
