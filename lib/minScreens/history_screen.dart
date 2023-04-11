@@ -34,7 +34,9 @@ class _TripsHistoryScreen extends State<TripsHistoryScreen> {
                 .allHistoryTripList[i],
           );
         },
-        itemCount: Provider.of<AppInfo>(context, listen: false).counttotalTrips,
+        itemCount: Provider.of<AppInfo>(context, listen: false)
+            .allHistoryTripList
+            .length,
         physics: const ClampingScrollPhysics(),
         shrinkWrap: true,
       ),
