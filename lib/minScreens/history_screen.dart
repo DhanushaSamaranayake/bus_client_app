@@ -18,7 +18,7 @@ class _TripsHistoryScreen extends State<TripsHistoryScreen> {
         title: const Text("Trips History"),
         leading: IconButton(
             onPressed: () {
-              SystemNavigator.pop();
+              Navigator.pop(context);
             },
             icon: const Icon(Icons.close)),
       ),

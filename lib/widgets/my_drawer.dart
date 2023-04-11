@@ -1,6 +1,7 @@
 import 'package:bus_client_app/SplashScreen/splash_screen.dart';
 import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/minScreens/history_screen.dart';
+import 'package:bus_client_app/minScreens/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class MyDrawer extends StatefulWidget {
@@ -88,7 +89,10 @@ class _MyDrawerState extends State<MyDrawer> {
           ),
 
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (c) => ProfileScreen()));
+            },
             child: const ListTile(
               leading: Icon(
                 Icons.person,
