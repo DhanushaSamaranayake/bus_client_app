@@ -5,6 +5,7 @@ import 'package:bus_client_app/global/map_key.dart';
 import 'package:bus_client_app/infoHandler/appInfo.dart';
 import 'package:bus_client_app/models/direction_detailsinfo.dart';
 import 'package:bus_client_app/models/directions.dart';
+import 'package:bus_client_app/models/tripHistory_model.dart';
 import 'package:bus_client_app/models/user_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
@@ -126,5 +127,58 @@ class AssistantMethods {
         Uri.parse("https://fcm.googleapis.com/fcm/send"),
         headers: headerNotification,
         body: jsonEncode(officalNotificationFormat));
+  }
+
+  //retrive the trips keys for online users
+  //trip key = ride request key
+  static void readTripKeyForOnlineUser(context) {
+    FirebaseDatabase.instance
+        .ref()
+        .child("All Ride Requests")
+        .orderByChild("userName")
+        .equalTo(userModelCurrentInfo!.name)
+        .once()
+        .then((snap) {
+      if (snap.snapshot.value != null) {
+        Map keysTripId = snap.snapshot.value as Map;
+        //count total trips and share it with helped of Provider
+        int overAllTripsCounter = keysTripId.length;
+        Provider.of<AppInfo>(context, listen: false)
+            .updateOverAllTripCounter(overAllTripsCounter);
+
+        //share the trip keys
+        List<String> tripKeysList = [];
+        keysTripId.forEach((key, value) {
+          tripKeysList.add(key);
+        });
+        Provider.of<AppInfo>(context, listen: false)
+            .updateOverAllTripKeysList(tripKeysList);
+
+        //get trip keys data - read trips complete info
+        readTripInfoFromHistoryTripKeys(context);
+      }
+    });
+  }
+
+  static void readTripInfoFromHistoryTripKeys(context) {
+    var tripsAllKeys =
+        Provider.of<AppInfo>(context, listen: false).historyTripKeyList;
+
+    for (String getEachKey in tripsAllKeys) {
+      FirebaseDatabase.instance
+          .ref()
+          .child("All Ride Requests")
+          .child(getEachKey)
+          .once()
+          .then((snap) {
+        var eachHistoryTrips = TripHistoryModel.fromSnapshot(snap.snapshot);
+        if ((snap.snapshot.value as Map)["status"] == "ended") {
+          eachHistoryTrips.status = "ended";
+        }
+        //update each overAllHistory data
+        Provider.of<AppInfo>(context, listen: false)
+            .updateTripHistoryList(eachHistoryTrips);
+      });
+    }
   }
 }
