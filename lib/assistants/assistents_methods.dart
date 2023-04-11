@@ -173,11 +173,10 @@ class AssistantMethods {
           .then((snap) {
         var eachHistoryTrips = TripHistoryModel.fromSnapshot(snap.snapshot);
         if ((snap.snapshot.value as Map)["status"] == "ended") {
-          eachHistoryTrips.status = "ended";
+          //update each overAllHistory data
+          Provider.of<AppInfo>(context, listen: false)
+              .updateTripHistoryList(eachHistoryTrips);
         }
-        //update each overAllHistory data
-        Provider.of<AppInfo>(context, listen: false)
-            .updateTripHistoryList(eachHistoryTrips);
       });
     }
   }
