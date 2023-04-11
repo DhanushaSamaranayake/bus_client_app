@@ -84,7 +84,7 @@ class AssistantMethods {
     double timeTraveledFarePerMin =
         (directionDetailsInfo.duration_value! / 60) * 0.2;
     double distanceTraveledFarePerKM =
-        (directionDetailsInfo.distance_value! / 1000) * 0.2;
+        (directionDetailsInfo.duration_value! / 1000) * 0.2;
     //USD type currency
     double totalFareAmount = timeTraveledFarePerMin + distanceTraveledFarePerKM;
 
