@@ -93,7 +93,7 @@ class AssistantMethods {
     double totalLocalAmount = totalFareAmount * 320;
 
     return double.parse(
-        totalLocalAmount.toStringAsFixed(2)); //21.3333 rounded amount
+        totalFareAmount.toStringAsFixed(2)); //21.3333 rounded amount
   }
 
   static sendNotificationDriverNow(

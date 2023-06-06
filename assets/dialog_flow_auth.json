@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "busadminbot-ubrp",
+  "private_key_id": "739cf7b99b71327cbc72238d108c3bc20bc9fd52",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCc0ES+bAs8pKc2\nG+INlNgE+l4KmSc9FULUyY8SQ3TezF+HgCOqoYbWt292IzAaE8qT0PuWMRqqg3or\n54mT2A9gAw1r1dMradMIDTNxgBlcvkes98E2VYOoGmL2xu0yVFHcdqoe1pscRChQ\nVj0/rteSo/b4l6lAszpVCvEX8AdM45gcTQS0J7uE8N59eeCCWVHZlqNB3qXav//S\nka/VNZjpGsP2MLNlCVwnAAc5hd4CSt1rjt8F7wE5Rf2nJGjg9D1MajCPsuMXEjn0\ncfArHY65c5HpB/7HtxB6sxZHIcC08Gulf+6IMMCS1MBo/UagzNTuL/jtYx+9CwBV\nYE/u0Tr3AgMBAAECggEACCWTI9LKQxqexNT8dEcQ/8BRqxcQuVw7E55PUb+x3I8d\nXTHIDCLGJ8qqxaZVrfizsh2VAPGIzeZYSqL3kZRpABOd2o0fomne7g0nvgl4OZ/O\n3FxfpP/Fcc5sPnTCI33LELsxDWVREPjC2aGfkMH32VqRXOdW19GNOtEqJuniABmJ\nKLrRo6HzRT4bwUQibX28T+ba+TltrhAJZ6gArpJtqDKuEzDrg2CeHh1zBdH/kz0h\nR4xhPrzbXu7yE1f1CANyIQZ4P/wrDbYG98owVzRMBpzoJqK/skhmlu4PHMyPY2SG\nAPq4ihX8Bj/5qNHBE3hW9nS+eWd92eTOv0W6zKOIoQKBgQDQg73RqUxYh3iwx6UB\nmzhIjPuY2Z2MkPMSwa3AjT/fmjzrUs5gqElLuJRpoSE6OQpjrlf6IoM3zilBuSZh\n72Anr/lm0kAX80RKDyQ0qw8g0DbYx6nWu7hnR37qF0Elq2zLifdJYPdryWI8xDDI\nicE+vkqjV6rSJslQS7jwc3cpxwKBgQDAhmP2nYwP0TJcsQ2HAJSh6tTR4FEWc+K0\nMksknQPImXQJGkpzw7MT7UMv8R9NkaSWbUO7woGCEmyvDx1RsQoLXeOOGR0M+wmx\nvKo/BoD9q3qniYcvMhumySw3VXzkQe/s67OBXIBkiKbPeWaR5dleuMLJSepzhzPp\n05lmNFLlUQKBgF/G0671W8siVu6klYd6W8z/bSXVd4e0oOJRslTKzLcRqr/Q5lkB\nk8FDRHCMga2zu7DzyRdtOOauPMcim53KjVlNfHqdQrF9nTWDZPcIR8ejvD2w4LNw\nwJA4B/TQv6zk4/FOKxc6gguxkf0lhN7oX6pJUBFdWGp1RG0siwNvliHLAoGAEpYm\n2m01U2WX3hj9vFXTA5q/Nw/X5DoF3e2pEXzTG6+s4yAVpf1zsW3Lebpmkj+ISzl7\nO4o4pI0Qzwm/g956oMRMrrA//LvToMQdD36aP2MpsTj2wxisULrFOQZYy1SOTCop\nJ0j94DbNG+SVgWpWRO3DaFlpeAPKgD18ZsCQbDECgYAPdk04NuUR18BOfWkqxJJZ\n+Tkn6cHEYsPdiKvBCe5CQl7qAgimxA1IY5zQhwLlyT83hletmhDR4r2+gDRQanqf\n3yuwIkZ+dd0EYlnDw7eO91v6mTewDlESSvzKTXIg3AY8r8hQs0+6gePMCJpXUOIK\nTTYB9a/gliJWcFU6Y7k3wA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "busadminbot@busadminbot-ubrp.iam.gserviceaccount.com",
+  "client_id": "104142996393614122626",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/busadminbot%40busadminbot-ubrp.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

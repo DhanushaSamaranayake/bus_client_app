@@ -4,6 +4,7 @@ import 'package:bus_client_app/auth/login.dart';
 import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/minScreens/mainScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MySplashScreen extends StatefulWidget {
   const MySplashScreen({Key? key}) : super(key: key);
@@ -21,10 +22,14 @@ class _MySplashScreenState extends State<MySplashScreen> {
       if (await fAuth.currentUser != null) {
         currentFirebaseUser = fAuth.currentUser;
         Navigator.push(
-            context, MaterialPageRoute(builder: (c) => const MainScreen()));
+          context,
+          MaterialPageRoute(builder: (c) => const MainScreen()),
+        );
       } else {
         Navigator.push(
-            context, MaterialPageRoute(builder: (c) => const LoginScreen()));
+          context,
+          MaterialPageRoute(builder: (c) => const LoginScreen()),
+        );
       }
     });
   }
@@ -32,39 +37,63 @@ class _MySplashScreenState extends State<MySplashScreen> {
   @override
   void initState() {
     super.initState();
-
     startTimer();
   }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+    );
     return Material(
       child: Container(
         color: Colors.white,
-        child: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            Image.asset(
-              'assets/images/loogo.png',
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Bus booking and Tracking',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
+            Positioned(
+              top: 270,
+              child: Container(
+                width: 250,
+                height: 250,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.lightBlue.withOpacity(0.2),
+                ),
               ),
             ),
-            const Text(
-              'inClient App',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
+            Positioned(
+              top: 220,
+              child: Container(
+                width: 350,
+                height: 350,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.lightBlue.withOpacity(0.4),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 190,
+              child: Container(
+                width: 400,
+                height: 400,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color.fromARGB(255, 90, 235, 232).withOpacity(0.6),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 300,
+              child: Image.asset(
+                'assets/images/logo.png',
+                height: 200,
+                width: 200,
               ),
             ),
           ],
-        )),
+        ),
       ),
     );
   }

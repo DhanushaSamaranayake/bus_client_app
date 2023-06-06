@@ -4,6 +4,7 @@ import 'package:bus_client_app/assistants/assistents_methods.dart';
 import 'package:bus_client_app/assistants/geofire_assistant.dart';
 import 'package:bus_client_app/global/global.dart';
 import 'package:bus_client_app/infoHandler/appInfo.dart';
+import 'package:bus_client_app/minScreens/chat_bot.dart';
 import 'package:bus_client_app/minScreens/rate_driver_screen.dart';
 import 'package:bus_client_app/minScreens/search_places_screen.dart';
 import 'package:bus_client_app/minScreens/select_online_neartestdrivers.dart';
@@ -58,6 +59,7 @@ class _MainScreenState extends State<MainScreen> {
 
   bool openNavigationDrawer = true;
   bool activeNearByDriverKeysLoaded = false;
+  bool showSearchUI = false;
   BitmapDescriptor? activeNearByIcon;
 
   List<ActiveNearByAvailableDrivers> onlineNearByAvailableDriversList = [];
@@ -681,7 +683,7 @@ class _MainScreenState extends State<MainScreen> {
     FirebaseDatabase.instance
         .ref()
         .child("drivers")
-        .child(driverChoosenId!)
+        .child(driverChoosenId)
         .child("newRideStatus")
         .set(referenceRideRequest!.key);
 
@@ -689,7 +691,7 @@ class _MainScreenState extends State<MainScreen> {
     FirebaseDatabase.instance
         .ref()
         .child("drivers")
-        .child(driverChoosenId!)
+        .child(driverChoosenId)
         .child("token")
         .once()
         .then((snap) {
@@ -729,10 +731,13 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     createActiveNearByDriverIconMarker();
+
     return Scaffold(
       key: sKey,
-      drawer: Container(
+      drawer: SizedBox(
         width: 340,
         child: Theme(
           data: Theme.of(context).copyWith(canvasColor: Colors.white),
@@ -799,6 +804,18 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
           ),
+          Positioned(
+            top: 100,
+            right: 22,
+            child: FloatingActionButton(
+              onPressed: () {
+                setState(() {
+                  showSearchUI = !showSearchUI;
+                });
+              },
+              child: const Icon(Icons.directions_bus_sharp),
+            ),
+          ),
 
           //ui for search location
           Positioned(
@@ -806,92 +823,31 @@ class _MainScreenState extends State<MainScreen> {
             left: 0,
             right: 0,
             child: AnimatedSize(
-              duration: const Duration(microseconds: 120),
+              duration: const Duration(milliseconds: 400),
               curve: Curves.easeIn,
-              child: Container(
-                height: searchLocationContainerHeight,
-                decoration: const BoxDecoration(
-                    color: Colors.white70,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(18),
-                        topRight: Radius.circular(18)),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black54,
-                          blurRadius: 16,
-                          spreadRadius: 0.8,
-                          offset: Offset(0.8, 0.8))
-                    ]),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                  child: Column(
-                    children: [
-                      //from location
-                      Row(children: [
-                        const Icon(
-                          Icons.add_location_alt_outlined,
-                          color: Colors.black38,
-                        ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'From',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 12),
-                            ),
-                            Text(
-                              Provider.of<AppInfo>(context)
-                                          .userPickUpLocation !=
-                                      null
-                                  ? (Provider.of<AppInfo>(context)
-                                              .userPickUpLocation!
-                                              .locationName!)
-                                          .substring(0, 24) +
-                                      "..."
-                                  : "Not getting address",
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 14),
-                            ),
-                          ],
-                        )
+              child: Visibility(
+                visible: showSearchUI,
+                child: Container(
+                  height: searchLocationContainerHeight,
+                  decoration: const BoxDecoration(
+                      color: Colors.white70,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(18),
+                          topRight: Radius.circular(18)),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black54,
+                            blurRadius: 16,
+                            spreadRadius: 0.8,
+                            offset: Offset(0.8, 0.8))
                       ]),
-
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Divider(
-                        height: 2,
-                        thickness: 2,
-                        color: Colors.black,
-                      ),
-
-                      const SizedBox(
-                        height: 16,
-                      ),
-
-                      // To location
-                      GestureDetector(
-                        onTap: () async {
-                          //go to search place screen
-                          var responseFromSearchScreen = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (c) => SearchPlacesScreen()));
-
-                          if (responseFromSearchScreen == "obtainedDropoff") {
-                            setState(() {
-                              openNavigationDrawer = false;
-                            });
-                            //draw routes / draw polyline
-                            await drawPolyLineFromOriginToDestination();
-                          }
-                        },
-                        child: Row(children: [
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 18),
+                    child: Column(
+                      children: [
+                        //from location
+                        Row(children: [
                           const Icon(
                             Icons.add_location_alt_outlined,
                             color: Colors.black38,
@@ -903,68 +859,133 @@ class _MainScreenState extends State<MainScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'To',
+                                'From',
                                 style: TextStyle(
                                     color: Colors.black, fontSize: 12),
                               ),
                               Text(
                                 Provider.of<AppInfo>(context)
-                                            .userDropOfLocation !=
+                                            .userPickUpLocation !=
                                         null
-                                    ? Provider.of<AppInfo>(context)
-                                        .userDropOfLocation!
-                                        .locationName!
-                                    : 'Where to go?',
+                                    ? (Provider.of<AppInfo>(context)
+                                                .userPickUpLocation!
+                                                .locationName!)
+                                            .substring(0, 24) +
+                                        "..."
+                                    : "Not getting address",
                                 style: const TextStyle(
                                     color: Colors.black, fontSize: 14),
                               ),
                             ],
                           )
                         ]),
-                      ),
 
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Divider(
-                        height: 2,
-                        thickness: 2,
-                        color: Colors.black,
-                      ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Divider(
+                          height: 2,
+                          thickness: 2,
+                          color: Colors.black,
+                        ),
 
-                      const SizedBox(
-                        height: 16,
-                      ),
+                        const SizedBox(
+                          height: 16,
+                        ),
 
-                      ElevatedButton(
-                        onPressed: () {
-                          if (Provider.of<AppInfo>(context, listen: false)
-                                  .userDropOfLocation !=
-                              null) {
-                            saveRideRequestInformation();
-                          } else {
-                            Fluttertoast.showToast(
-                                msg: "Please Select Destination Location");
-                          }
-                        },
-                        child: const Text('Request a Ride'),
-                        style: ElevatedButton.styleFrom(
-                            textStyle: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontFamily: 'Brand-Bold'),
-                            primary: Color(0xFF0076CB),
-                            shadowColor: Colors.black54,
-                            shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(24)))),
-                      )
-                    ],
+                        // To location
+                        GestureDetector(
+                          onTap: () async {
+                            //go to search place screen
+                            var responseFromSearchScreen = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (c) => SearchPlacesScreen()));
+
+                            if (responseFromSearchScreen == "obtainedDropoff") {
+                              setState(() {
+                                openNavigationDrawer = false;
+                              });
+                              //draw routes / draw polyline
+                              await drawPolyLineFromOriginToDestination();
+                            }
+                          },
+                          child: Row(children: [
+                            const Icon(
+                              Icons.add_location_alt_outlined,
+                              color: Colors.black38,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'To',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 12),
+                                ),
+                                Text(
+                                  Provider.of<AppInfo>(context)
+                                              .userDropOfLocation !=
+                                          null
+                                      ? Provider.of<AppInfo>(context)
+                                          .userDropOfLocation!
+                                          .locationName!
+                                      : 'Where to go?',
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 14),
+                                ),
+                              ],
+                            )
+                          ]),
+                        ),
+
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Divider(
+                          height: 2,
+                          thickness: 2,
+                          color: Colors.black,
+                        ),
+
+                        const SizedBox(
+                          height: 16,
+                        ),
+
+                        ElevatedButton(
+                          onPressed: () {
+                            if (Provider.of<AppInfo>(context, listen: false)
+                                    .userDropOfLocation !=
+                                null) {
+                              saveRideRequestInformation();
+                            } else {
+                              Fluttertoast.showToast(
+                                  msg: "Please Select Destination Location");
+                            }
+                          },
+                          child: const Text('Request a Ride'),
+                          style: ElevatedButton.styleFrom(
+                              textStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontFamily: 'Brand-Bold'),
+                              primary: Color(0xFF0076CB),
+                              shadowColor: Colors.black54,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(24)))),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
+
           //ui for waiting response from driver
           Positioned(
             bottom: 0,
@@ -1016,7 +1037,7 @@ class _MainScreenState extends State<MainScreen> {
             child: Container(
               height: assignedDriverInfoContainerHeight,
               decoration: const BoxDecoration(
-                color: Colors.black87,
+                color: Color.fromARGB(185, 33, 149, 243),
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
                   topLeft: Radius.circular(20),
@@ -1028,72 +1049,68 @@ class _MainScreenState extends State<MainScreen> {
                   vertical: 20,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    //status of the ride
-                    Center(
-                      child: Text(
-                        driverRideRequestStatus,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontFamily: 'Brand-Bold',
-                        ),
+                    Text(
+                      driverRideRequestStatus,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(
                       height: 20,
                     ),
-
-                    //bus detail information
                     Text(
                       driverBusDetails,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 16,
-                        fontFamily: 'Brand-Bold',
                       ),
                     ),
-
                     const SizedBox(
-                      height: 2,
+                      height: 8,
                     ),
-
-                    //driver name
                     Text(
                       driverName,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 20,
+                        fontWeight: FontWeight.bold,
                         fontFamily: 'Brand-Bold',
                       ),
                     ),
-
                     const SizedBox(
                       height: 20,
                     ),
-
-                    //call driver
-                    Center(
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.phone_android,
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.phone_android,
+                        color: Colors.black,
+                        size: 22,
+                      ),
+                      label: const Text(
+                        "Call Driver",
+                        style: TextStyle(
                           color: Colors.black,
-                          size: 22,
+                          fontWeight: FontWeight.bold,
                         ),
-                        label: const Text("Call Driver",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            )),
-                        style: ElevatedButton.styleFrom(
-                            primary: Colors.green,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20))),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
                       ),
                     ),
                   ],
@@ -1261,6 +1278,7 @@ class _MainScreenState extends State<MainScreen> {
           //whenever any driver become nonactive-online/offline
           case Geofire.onKeyExited:
             GeoFireAssistant.deleteOfflineDriverFromList(map['key']);
+            displayActiveDriversOnUsersMap();
             break;
           //update driver moves - update driver location
           case Geofire.onKeyMoved:

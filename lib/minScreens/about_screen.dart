@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AboutScreen extends StatefulWidget {
   @override
@@ -8,6 +9,8 @@ class AboutScreen extends StatefulWidget {
 class _AboutScreen extends State<AboutScreen> {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     return Scaffold(
       backgroundColor: Colors.white,
       body: ListView(
@@ -20,7 +23,7 @@ class _AboutScreen extends State<AboutScreen> {
               width: double.infinity,
               child: Center(
                 child: Image.asset(
-                  'assets/images/car_logo.png',
+                  'assets/images/Luxury.png',
                   fit: BoxFit.cover,
                   width: 260,
                 ),
@@ -30,11 +33,16 @@ class _AboutScreen extends State<AboutScreen> {
           //company name and About company
           Column(
             children: [
-              const Text(
-                'Bus Booking and Tracking App',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: const Text(
+                    'Bus Booking \n       and\nTracking App',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(

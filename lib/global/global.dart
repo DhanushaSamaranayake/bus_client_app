@@ -16,3 +16,9 @@ String driverName = "";
 String driverPhone = "";
 double countRatingStars = 0.0;
 String titleRating = "";
+
+class Env {
+  static const String createOrderUrl = "https://api.razorpay.com/v1/orders";
+  static const String keySecret = "LD8sJmm3nPfSviNz3Yc2lzeD";
+  static const String keyId = "rzp_test_cGwh6lX3ZAWcNO";
+}
